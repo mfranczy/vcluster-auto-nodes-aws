@@ -18,13 +18,12 @@ module "vpc" {
   name = local.vpc_name
   cidr = local.vpc_cidr_block
 
-  azs             = local.azs
-  private_subnets = local.private_subnets
-  public_subnets  = local.public_subnets
-
-  enable_nat_gateway = true
-
-  one_nat_gateway_per_az = true
+  azs                    = local.azs
+  private_subnets        = local.private_subnets
+  public_subnets         = local.public_subnets
+  enable_nat_gateway     = true
+  single_nat_gateway     = true
+  one_nat_gateway_per_az = false
 
   tags = {
     Name = local.vpc_name

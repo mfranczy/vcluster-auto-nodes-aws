@@ -1,5 +1,26 @@
-data "aws_ssm_parameter" "ami_id" {
-  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+data "aws_ami" "ami" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical 
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
 }
 
 module "validation" {
@@ -13,10 +34,10 @@ resource "random_integer" "subnet_index" {
 }
 
 resource "aws_instance" "this" {
-  ami                         = data.aws_ssm_parameter.ami_id.insecure_value
+  ami                         = data.aws_ami.ami.id
   instance_type               = local.instance_type
   subnet_id                   = local.subnet_id
-  vpc_security_group_ids      = [local.sg_id]
+  vpc_security_group_ids      = [local.security_group_id]
   user_data                   = local.user_data
   user_data_replace_on_change = true
 
