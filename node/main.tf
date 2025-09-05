@@ -2,6 +2,11 @@ data "aws_ssm_parameter" "ami_id" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 }
 
+module "validation" {
+  source = "./validation"
+  region = var.vcluster.requirements["region"]
+}
+
 resource "random_integer" "subnet_index" {
   min = 0
   max = length(var.vcluster.nodeEnvironment.outputs["private_subnet_ids"]) - 1
@@ -9,10 +14,10 @@ resource "random_integer" "subnet_index" {
 
 resource "aws_instance" "this" {
   ami                         = data.aws_ssm_parameter.ami_id.insecure_value
-  instance_type               = var.vcluster.nodeType.spec.properties["instance-type"]
+  instance_type               = local.instance_type
   subnet_id                   = local.subnet_id
-  vpc_security_group_ids      = [var.vcluster.nodeEnvironment.outputs["security_group_id"]]
-  user_data                   = var.vcluster.userData
+  vpc_security_group_ids      = [local.sg_id]
+  user_data                   = local.user_data
   user_data_replace_on_change = true
 
   associate_public_ip_address = false

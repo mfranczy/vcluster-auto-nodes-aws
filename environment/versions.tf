@@ -13,12 +13,12 @@ terraform {
 }
 
 provider "aws" {
-  region = local.region
+  region = module.validation.region
 
   default_tags {
     tags = {
-      "vcluster:name"      = var.vcluster.instance.metadata.name
-      "vcluster:namespace" = var.vcluster.instance.metadata.namespace
+      "vcluster:name"      = local.vcluster_name
+      "vcluster:namespace" = local.vcluster_namespace
     }
   }
 }

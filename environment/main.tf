@@ -6,6 +6,11 @@ resource "random_id" "vpc_suffix" {
   byte_length = 4
 }
 
+module "validation" {
+  source = "./validation"
+  region = var.vcluster.requirements["region"]
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 6.0"
