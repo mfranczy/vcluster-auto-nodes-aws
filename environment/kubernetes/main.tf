@@ -2,7 +2,7 @@
 resource "kubernetes_deployment" "nginx" {
   metadata {
     name      = "nginx"
-    namespace = default
+    namespace = "default"
     labels = {
       app = "nginx"
     }
