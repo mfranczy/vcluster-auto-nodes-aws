@@ -1,4 +1,3 @@
-# test
 resource "kubernetes_deployment" "nginx" {
   metadata {
     name      = "nginx"
@@ -36,4 +35,6 @@ resource "kubernetes_deployment" "nginx" {
       }
     }
   }
+
+  wait_for_rollout = false
 }
