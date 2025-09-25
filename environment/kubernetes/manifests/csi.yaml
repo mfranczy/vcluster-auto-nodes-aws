@@ -511,7 +511,7 @@ spec:
           timeoutSeconds: 60
         name: ebs-plugin
         ports:
-        - containerPort: 9809
+        - containerPort: 9808
           name: healthz
           protocol: TCP
         readinessProbe:
@@ -786,7 +786,7 @@ spec:
           timeoutSeconds: 3
         name: ebs-plugin
         ports:
-        - containerPort: 19808
+        - containerPort: 9808
           name: healthz
           protocol: TCP
         readinessProbe:
@@ -870,7 +870,6 @@ spec:
         volumeMounts:
         - mountPath: /csi
           name: plugin-dir
-      hostNetwork: true
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-node-critical
