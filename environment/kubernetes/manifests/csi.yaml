@@ -684,7 +684,6 @@ spec:
         - mountPath: /csi
           name: socket-dir
       hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-cluster-critical
@@ -873,7 +872,6 @@ spec:
         - mountPath: /csi
           name: plugin-dir
       hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-node-critical
