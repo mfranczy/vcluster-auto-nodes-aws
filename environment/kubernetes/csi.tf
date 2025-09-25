@@ -1,11 +1,12 @@
 # Load and split a multi-document YAML file
 locals {
   csi_yaml = file("${path.module}/manifests/csi.yaml")
+  csi_chunks = split("\n---\n", local.csi_yaml)
 
   csi_docs = [
-    for m in regexall("(?s)^(?:---\\s*)?(.*?)(?=\\n---|\\Z)", local.csi_yaml) :
-    yamldecode(m[0])
-    if trimspace(m[0]) != ""
+    for chunk in local.csi_chunks :
+    yamldecode(chunk)
+    if trimspace(chunk) != ""
   ]
 
   csi_map = {
