@@ -19,6 +19,12 @@ resource "kubernetes_manifest" "csi" {
   for_each        = local.csi_map
   manifest        = each.value
 
+  computed_fields = [
+    "metadata.annotations",
+    "metadata.labels",
+    "spec.nodeAllocatableUpdatePeriodSeconds"
+  ]
+
   field_manager {
     force_conflicts = true
   }
