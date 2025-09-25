@@ -15,7 +15,7 @@ output "security_group_id" {
 
 output "instance_profile_name" {
   description = "Instance profile name to attach to worker nodes"
-  value       = aws_iam_instance_profile.allow_ccm_csi.name
+  value       = aws_iam_instance_profile.allow_ccm_csi_ecr.name
 }
 
 output "cluster_tag" {
