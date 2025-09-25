@@ -159,6 +159,7 @@ resource "kubernetes_deployment_v1" "aws_cloud_controller_manager" {
 
       spec {
         host_network         = true
+        dns_policy           = "ClusterFirstWithHostNet"
         service_account_name = kubernetes_service_account_v1.ccm_sa.metadata[0].name
         priority_class_name = "system-cluster-critical"
 
