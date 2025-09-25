@@ -53,7 +53,10 @@ resource "aws_instance" "this" {
   metadata_options {
     http_endpoint = "enabled"
     http_tokens   = "required"
+    http_put_response_hop_limit = 3 # TODO: change this <- only experiment
   }
+
+  iam_instance_profile = local.instance_profile_name
 
   tags = {
     Name = format("%s-worker-node", local.vcluster_name)

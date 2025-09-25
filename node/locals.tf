@@ -6,4 +6,5 @@ locals {
   instance_type     = var.vcluster.nodeType.spec.properties["instance-type"]
   user_data         = var.vcluster.userData
   security_group_id = var.vcluster.nodeEnvironment.outputs["security_group_id"]
+  instance_profile_name = var.vcluster.nodeEnvironment.outputs["instance_profile_name"]
 }
