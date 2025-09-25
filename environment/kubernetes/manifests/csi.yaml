@@ -683,7 +683,6 @@ spec:
         volumeMounts:
         - mountPath: /csi
           name: socket-dir
-      hostNetwork: true
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-cluster-critical
