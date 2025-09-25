@@ -18,8 +18,10 @@ locals {
 resource "kubernetes_manifest" "csi" {
   for_each        = local.csi_map
   manifest        = each.value
-  field_manager   = "terraform"
-  force_conflicts = true
+
+  field_manager {
+    force_conflicts = true
+  }
 
   wait {
     rollout = false
