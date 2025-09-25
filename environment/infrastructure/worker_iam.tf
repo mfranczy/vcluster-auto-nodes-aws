@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "control_plane" {
 }
 
 resource "aws_iam_policy" "control_plane" {
-  name        = "control_plane_policy"
+  name        = format("%s-control_plane_policy", local.vcluster_name)
   description = "Permissions for CCM and CSI"
   policy      = data.aws_iam_policy_document.control_plane.json
 }
@@ -94,7 +94,7 @@ data "aws_iam_policy_document" "worker_node" {
 }
 
 resource "aws_iam_policy" "worker_node" {
-  name        = "worker-node-ecr-pull"
+  name        = format("%s-worker_node", local.vcluster_name)
   description = "Permissions for ECR and EC2 region"
   policy      = data.aws_iam_policy_document.worker_node.json
 }
@@ -111,22 +111,22 @@ data "aws_iam_policy_document" "assume_ec2" {
   }
 }
 
-resource "aws_iam_role" "ec2_ccm_csi" {
-  name               = "ec2_permissions"
+resource "aws_iam_role" "ccm_csi" {
+  name               = format("%s-ccm-csi", local.vcluster_name)
   assume_role_policy = data.aws_iam_policy_document.assume_ec2.json
 }
 
 resource "aws_iam_role_policy_attachment" "control_plane" {
-  role       = aws_iam_role.ec2_ccm_csi.name
+  role       = aws_iam_role.ccm_csi.name
   policy_arn = aws_iam_policy.control_plane.arn
 }
 
 resource "aws_iam_role_policy_attachment" "worker" {
-  role       = aws_iam_role.ec2_ccm_csi.name
+  role       = aws_iam_role.ccm_csi.name
   policy_arn = aws_iam_policy.worker_node.arn
 }
 
 resource "aws_iam_instance_profile" "allow_ccm_csi" {
-  name = "allow_ccm_csi"
-  role = aws_iam_role.ec2_ccm_csi.name
+  name = format("%s-allow_ccm_csi", local.vcluster_name)
+  role = aws_iam_role.ccm_csi.name
 }
