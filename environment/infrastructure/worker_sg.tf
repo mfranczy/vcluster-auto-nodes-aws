@@ -74,6 +74,15 @@ resource "aws_security_group" "workers" {
     cidr_blocks = [local.vpc_cidr_block]
   }
 
+  # CSI EBS Controller
+  ingress {
+    description = "csi-ebs-controller"
+    from_port   = 9808
+    to_port     = 9808
+    protocol    = "tcp"
+    cidr_blocks = [local.vpc_cidr_block]
+  }
+
   tags = {
     Name = format("%s-workers-sg", local.vcluster_name)
   }
