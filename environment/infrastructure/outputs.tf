@@ -17,3 +17,8 @@ output "instance_profile_name" {
   description = "Instance profile name to attach to worker nodes"
   value       = aws_iam_instance_profile.allow_ccm_csi.name
 }
+
+output "cluster_tag" {
+  description = "Global tag of all provisioned AWS resources"
+  value       = local.cluster_tag
+}
