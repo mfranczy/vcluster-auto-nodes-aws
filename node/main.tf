@@ -50,6 +50,10 @@ resource "aws_instance" "this" {
     encrypted             = true
   }
 
+  private_dns_name_options {
+    hostname_type = "resource-name"
+  }
+
   metadata_options {
     http_endpoint = "enabled"
     http_tokens   = "required"
