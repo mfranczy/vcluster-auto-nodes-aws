@@ -684,7 +684,6 @@ spec:
         volumeMounts:
         - mountPath: /csi
           name: socket-dir
-      hostNetwork: true
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-cluster-critical
@@ -872,7 +871,6 @@ spec:
         volumeMounts:
         - mountPath: /csi
           name: plugin-dir
-      hostNetwork: true
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-node-critical
