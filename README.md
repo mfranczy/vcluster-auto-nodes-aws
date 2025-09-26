@@ -104,6 +104,9 @@ This vcluster.yaml file defines a Private Node Virtual Cluster with Auto Nodes e
 ```yaml
 # vcluster.yaml
 controlPlane:
+  advanced:
+    cloudControllerManager:
+      enabled: false # disable vcluster CCM
   service:
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
