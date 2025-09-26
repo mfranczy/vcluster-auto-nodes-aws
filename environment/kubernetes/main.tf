@@ -1,5 +1,6 @@
 locals {
   manifest_files = [
+    "${path.module}/manifests/admission-policy.yaml",
     "${path.module}/manifests/ccm.yaml",
     "${path.module}/manifests/csi.yaml",
   ]

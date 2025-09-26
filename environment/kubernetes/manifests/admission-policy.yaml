@@ -1,0 +1,23 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: no-hostnetwork-except-kube-system
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE","UPDATE"]
+        resources: ["pods"]
+  validations:
+    - expression: "request.namespace == 'kube-system' || !has(object.spec.hostNetwork) || object.spec.hostNetwork == false"
+      message: "hostNetwork: true is not allowed outside kube-system."
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: no-hostnetwork-except-kube-system-binding
+spec:
+  policyName: no-hostnetwork-except-kube-system
+  validationActions: ["Deny"]
