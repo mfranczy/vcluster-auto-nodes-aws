@@ -1,5 +1,34 @@
-# Control plane policy
-data "aws_iam_policy_document" "control_plane" {
+###############################
+# EC2 role and instance profile
+###############################
+
+data "aws_iam_policy_document" "assume_ec2" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "allow_ccm_csi_ecr" {
+  name               = format("%s-allow_ccm_csi_ecr", local.vcluster_name)
+  assume_role_policy = data.aws_iam_policy_document.assume_ec2.json
+}
+
+resource "aws_iam_instance_profile" "allow_ccm_csi_ecr" {
+  name = format("%s-allow_ccm_csi_ecr", local.vcluster_name)
+  role = aws_iam_role.allow_ccm_csi_ecr.name
+}
+
+###############################
+# CCM policy
+###############################
+
+data "aws_iam_policy_document" "ccm" {
   statement {
     effect = "Allow"
 
@@ -9,23 +38,14 @@ data "aws_iam_policy_document" "control_plane" {
       "autoscaling:DescribeTags",
       "ec2:DescribeInstances",
       "ec2:DescribeRegions",
-      "ec2:DescribeRouteTables",
       "ec2:DescribeSecurityGroups",
       "ec2:DescribeSubnets",
-      "ec2:DescribeVolumes",
       "ec2:DescribeAvailabilityZones",
       "ec2:CreateSecurityGroup",
       "ec2:CreateTags",
-      "ec2:CreateVolume",
       "ec2:ModifyInstanceAttribute",
-      "ec2:ModifyVolume",
-      "ec2:AttachVolume",
       "ec2:AuthorizeSecurityGroupIngress",
-      "ec2:CreateRoute",
-      "ec2:DeleteRoute",
       "ec2:DeleteSecurityGroup",
-      "ec2:DeleteVolume",
-      "ec2:DetachVolume",
       "ec2:RevokeSecurityGroupIngress",
       "ec2:DescribeVpcs",
       "ec2:DescribeInstanceTopology",
@@ -66,20 +86,26 @@ data "aws_iam_policy_document" "control_plane" {
   }
 }
 
-resource "aws_iam_policy" "control_plane" {
-  name        = format("%s-control_plane_policy", local.vcluster_name)
-  description = "Permissions for CCM and CSI"
-  policy      = data.aws_iam_policy_document.control_plane.json
+resource "aws_iam_policy" "ccm" {
+  name        = format("%s-ccm", local.vcluster_name)
+  description = "Permissions for CCM"
+  policy      = data.aws_iam_policy_document.ccm.json
 }
 
-# Worker node
-data "aws_iam_policy_document" "worker_node" {
+resource "aws_iam_role_policy_attachment" "ccm" {
+  role       = aws_iam_role.allow_ccm_csi_ecr.name
+  policy_arn = aws_iam_policy.ccm.arn
+}
+
+###############################
+# ECR policy
+###############################
+
+data "aws_iam_policy_document" "ecr" {
   statement {
     effect = "Allow"
 
     actions = [
-      "ec2:DescribeInstances",
-      "ec2:DescribeRegions",
       "ecr:GetAuthorizationToken",
       "ecr:BatchCheckLayerAvailability",
       "ecr:GetDownloadUrlForLayer",
@@ -93,23 +119,20 @@ data "aws_iam_policy_document" "worker_node" {
   }
 }
 
-resource "aws_iam_policy" "worker_node" {
-  name        = format("%s-worker_node", local.vcluster_name)
-  description = "Permissions for ECR and EC2 region"
-  policy      = data.aws_iam_policy_document.worker_node.json
+resource "aws_iam_policy" "ecr" {
+  name        = format("%s-ecr", local.vcluster_name)
+  description = "Permissions for ECR"
+  policy      = data.aws_iam_policy_document.ecr.json
 }
 
-data "aws_iam_policy_document" "assume_ec2" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com"]
-    }
-  }
+resource "aws_iam_role_policy_attachment" "ecr" {
+  role       = aws_iam_role.allow_ccm_csi_ecr.name
+  policy_arn = aws_iam_policy.ecr.arn
 }
+
+###############################
+# EBS CSI policy
+###############################
 
 data "aws_iam_policy_document" "ebs_csi" {
   # Describe permissions
@@ -296,32 +319,11 @@ data "aws_iam_policy_document" "ebs_csi" {
 
 resource "aws_iam_policy" "ebs_csi" {
   name        = format("%s-ebs", local.vcluster_name)
-  description = "IAM policy for AWS EBS CSI driver"
+  description = "Permissions for EBS CSI driver"
   policy      = data.aws_iam_policy_document.ebs_csi.json
-}
-
-# Attach policies to role
-resource "aws_iam_role" "allow_ccm_csi_ecr" {
-  name               = format("%s-allow_ccm_csi_ecr", local.vcluster_name)
-  assume_role_policy = data.aws_iam_policy_document.assume_ec2.json
-}
-
-resource "aws_iam_role_policy_attachment" "control_plane" {
-  role       = aws_iam_role.allow_ccm_csi_ecr.name
-  policy_arn = aws_iam_policy.control_plane.arn
-}
-
-resource "aws_iam_role_policy_attachment" "worker" {
-  role       = aws_iam_role.allow_ccm_csi_ecr.name
-  policy_arn = aws_iam_policy.worker_node.arn
 }
 
 resource "aws_iam_role_policy_attachment" "ebs_csi" {
   role       = aws_iam_role.allow_ccm_csi_ecr.name
   policy_arn = aws_iam_policy.ebs_csi.arn
-}
-
-resource "aws_iam_instance_profile" "allow_ccm_csi_ecr" {
-  name = format("%s-allow_ccm_csi_ecr", local.vcluster_name)
-  role = aws_iam_role.allow_ccm_csi_ecr.name
 }
