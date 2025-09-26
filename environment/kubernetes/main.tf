@@ -7,8 +7,8 @@ locals {
 
   computed_fields_by_file = {
     "${path.module}/manifests/csi.yaml" = {
-      by_kind = {
-        csidriver = ["nodeAllocatableUpdatePeriodSeconds"]
+      by_gvk = {
+        "storage.k8s.io/v1/csidriver" = ["spec.nodeAllocatableUpdatePeriodSeconds"]
       }
     }
   }
