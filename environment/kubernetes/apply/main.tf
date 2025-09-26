@@ -26,4 +26,10 @@ resource "kubernetes_manifest" "apply" {
 
   # make server-side apply tolerant when stuff already exists
   field_manager { force_conflicts = true }
+
+  computed_fields = [
+    "metadata.annotations",
+    "metadata.labels",
+    "spec.nodeAllocatableUpdatePeriodSeconds"
+  ]
 }
