@@ -5,6 +5,9 @@
 ```yaml
 # vcluster.yaml
 controlPlane:
+  advanced:
+    cloudControllerManager:
+      enabled: false # disable vcluster CCM
   service:
     spec:
      type: LoadBalancer
@@ -32,7 +35,7 @@ Terraform modules for Auto Nodes on AWS to dynamically provision EC2 instances f
 
 This quickstart NodeProvider isolates all nodes into separate VPCs by default.
 
-Per virtual cluster, it'll create (see [Environment](./environment/)):
+Per virtual cluster, it'll create (see [Environment](./environment/infrastructure)):
 
 - A VPC
 - A public subnet in 2 AZs
