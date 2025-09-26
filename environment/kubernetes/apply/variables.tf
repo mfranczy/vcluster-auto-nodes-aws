@@ -6,7 +6,7 @@ variable "manifest_file" {
 # Optional: default list used when no specific mapping matches
 variable "computed_fields_default" {
   type        = list(string)
-  default     = [metadata.annotations, metadata.labels]
+  default     = ["metadata.annotations", "metadata.labels"]
 }
 
 # Optional: per-Kind mapping, keys like "deployment", "daemonset", "service", etc. (lowercased)
