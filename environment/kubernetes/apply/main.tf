@@ -1,10 +1,10 @@
 locals {
-  # Read and split multi-doc YAML
-  manifest_yaml   = replace(file(var.manifest_file), "\r\n", "\n")
-  manifest_chunks = [for c in split("\n---\n", local.manifest_yaml) : c if trimspace(c) != ""]
-  manifest_docs   = [for c in local.manifest_chunks : yamldecode(c)]
+  rendered_yaml = templatefile(var.manifest_file, var.template_vars)
 
-  # Stable keys: kind:namespace:name:index
+  manifest_yaml   = replace(local.rendered_yaml, "\r\n", "\n")
+  manifest_chunks = [for c in split("\n---\n", local.manifest_yaml) : trimspace(c)]
+  manifest_docs   = [for c in local.manifest_chunks : yamldecode(c) if c != ""]
+
   manifest_map = {
     for i, m in local.manifest_docs :
     "${lower(lookup(m, "kind", ""))}:${lookup(lookup(m, "metadata", {}), "namespace", "")}:${lookup(lookup(m, "metadata", {}), "name", "")}:${i}" => m
@@ -17,6 +17,10 @@ resource "kubernetes_manifest" "apply" {
 
   wait { rollout = false }
 
-  # tolerate existing objects (server-side apply)
-  field_manager { force_conflicts = true }
+  field_manager {
+    name            = "terraform"
+    force_conflicts = true
+  }
+
+  computed_fields = var.computed_fields
 }
