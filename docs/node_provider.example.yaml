@@ -5,9 +5,14 @@ metadata:
 spec:
   terraform:
     nodeEnvironmentTemplate:
-      git:
-        repository: https://github.com/loft-sh/vcluster-auto-nodes-aws.git
-        subPath: environment
+      infrastructure:
+        git:
+          repository: https://github.com/loft-sh/vcluster-auto-nodes-aws.git
+          subPath: environment/infrastructure
+      kubernetes:
+        git:
+          repository: https://github.com/loft-sh/vcluster-auto-nodes-aws.git
+          subPath: environment/kubernetes
     nodeTemplate:
       git:
         repository: https://github.com/loft-sh/vcluster-auto-nodes-aws.git

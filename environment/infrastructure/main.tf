@@ -8,7 +8,7 @@ resource "random_id" "vpc_suffix" {
 
 module "validation" {
   source = "./validation"
-  region = var.vcluster.requirements["region"]
+  region = var.vcluster.properties["region"]
 }
 
 module "vpc" {
