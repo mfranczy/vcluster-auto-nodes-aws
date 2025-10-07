@@ -95,9 +95,29 @@ resource "aws_iam_policy" "ccm" {
   policy      = data.aws_iam_policy_document.ccm.json
 }
 
-resource "aws_iam_role_policy_attachment" "ccm" {
-  role       = aws_iam_role.allow_ccm_csi_ecr.name
+resource "aws_iam_user" "ccm" {
+  name = format("%s-ccm", local.vcluster_name)
+}
+
+resource "aws_iam_user_policy_attachment" "ccm" {
+  user       = aws_iam_user.ccm.name
   policy_arn = aws_iam_policy.ccm.arn
+}
+
+resource "aws_iam_access_key" "ccm" {
+  user = aws_iam_user.ccm.name
+}
+
+resource "aws_secretsmanager_secret" "ccm" {
+  name = format("%s-ccm", local.vcluster_name)
+}
+
+resource "aws_secretsmanager_secret_version" "ccm" {
+  secret_id     = aws_secretsmanager_secret.ccm.id
+  secret_string = jsonencode({
+    AWS_ACCESS_KEY_ID     = aws_iam_access_key.ccm.id
+    AWS_SECRET_ACCESS_KEY = aws_iam_access_key.ccm.secret
+  })
 }
 
 ###############################
