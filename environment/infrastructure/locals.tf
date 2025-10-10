@@ -1,5 +1,5 @@
 locals {
-  vpc_cidr_block = "10.0.0.0/16"
+  vpc_cidr_block = try(var.vcluster.properties["vcluster.com/vpc-cidr"], "10.0.0.0/16")
   azs            = slice(data.aws_availability_zones.available.names, 0, min(2, length(data.aws_availability_zones.available.names)))
 
   public_subnets  = [for idx, az in local.azs : cidrsubnet(local.vpc_cidr_block, 8, idx)]
