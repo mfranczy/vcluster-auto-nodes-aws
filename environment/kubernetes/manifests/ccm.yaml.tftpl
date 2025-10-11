@@ -110,6 +110,7 @@ spec:
             - --cloud-config=/etc/kubernetes/cloud-config
             - --use-service-account-credentials=true
             - --configure-cloud-routes=false
+            - --leader-elect-resource-name=${node_provider_name}-cloud-controller-manager
           resources:
             requests:
               cpu: "200m"
